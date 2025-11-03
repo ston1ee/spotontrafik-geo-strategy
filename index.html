@@ -58,6 +58,7 @@
             gap: 5px;
         }
 
+        /* Enhanced Navigation with Scroll Minimization */
         nav {
             background: white;
             padding: 20px 0;
@@ -65,6 +66,16 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            transition: all 0.3s ease;
+            max-height: 400px;
+            overflow: hidden;
+        }
+
+        nav.minimized {
+            padding: 8px 0;
+            max-height: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
 
         .nav-container {
@@ -77,6 +88,25 @@
             margin-bottom: 15px;
             color: #1e3c72;
             font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        nav.minimized h3 {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        .nav-toggle {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        nav.minimized .nav-toggle {
+            transform: rotate(180deg);
         }
 
         nav ul {
@@ -84,6 +114,22 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 10px;
+            transition: all 0.3s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        nav.minimized ul {
+            opacity: 0;
+            transform: translateY(-10px);
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        nav.expanded ul {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px;
         }
 
         nav a {
@@ -99,6 +145,23 @@
         nav a:hover {
             background-color: #1e3c72;
             color: white;
+        }
+
+        nav a.active {
+            background-color: #2a5298;
+            color: white;
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: 101;
+            transition: width 0.1s ease;
         }
 
         main {
@@ -224,6 +287,13 @@
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .back-to-top:hover {
@@ -248,6 +318,10 @@
 
             nav ul {
                 grid-template-columns: 1fr;
+            }
+
+            nav.minimized {
+                max-height: 50px;
             }
         }
 
@@ -303,6 +377,9 @@
     </style>
 </head>
 <body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
     <header>
         <div class="container">
             <h1>Comprehensive GEO Strategy Analysis</h1>
@@ -324,10 +401,13 @@
         </div>
     </header>
 
-    <nav>
+    <nav id="navigation">
         <div class="nav-container">
-            <h3>📋 Table of Contents</h3>
-            <ul>
+            <h3 onclick="toggleNav()">
+                📋 Table of Contents 
+                <span class="nav-toggle">▼</span>
+            </h3>
+            <ul id="navList">
                 <li><a href="#executive-summary">Executive Summary</a></li>
                 <li><a href="#foundational-concepts">1. Foundational Concepts: SEO to GEO Evolution</a></li>
                 <li><a href="#geographic-ranking">2. Geographic Search Ranking Factors</a></li>
@@ -518,67 +598,6 @@
                         <li>Geolocation coordinates (latitude/longitude precision)</li>
                     </ul>
                 </div>
-
-                <div class="warning-box">
-                    <h3>Tier 2: High Impact (35% weighted importance)</h3>
-                    <p><strong>2.2.1 Citation Authority and Quality</strong></p>
-                    <ul>
-                        <li>Citations from high-authority Danish directories (Krak.dk, De Gule Sider)</li>
-                        <li>Industry-specific directories (driving school registries, transportation databases)</li>
-                        <li>Local business directories with geographic targeting</li>
-                        <li>Government and official business registrations</li>
-                        <li>Professional association listings</li>
-                        <li>Local chamber of commerce memberships</li>
-                    </ul>
-                    
-                    <p><strong>2.2.2 Online Reviews and Ratings</strong></p>
-                    <ul>
-                        <li>Quantity of reviews (correlation with rankings begins at 20+ reviews)</li>
-                        <li>Rating average (4.0+ significantly impacts local pack placement)</li>
-                        <li>Recency of reviews (recent reviews weighted more heavily)</li>
-                        <li>Review diversity across platforms (Google, Trustpilot, Facebook, industry-specific)</li>
-                        <li>Review authenticity and detailed content (reviews with 50+ words rank higher)</li>
-                        <li>Merchant response to reviews (engagement signals authority)</li>
-                    </ul>
-                    
-                    <p><strong>2.2.3 Local Link Building</strong></p>
-                    <ul>
-                        <li>Links from local news publications</li>
-                        <li>Local industry association links</li>
-                        <li>Links from neighboring businesses and community organizations</li>
-                        <li>Local blog mentions and citations</li>
-                        <li>Local government and municipal websites</li>
-                    </ul>
-                </div>
-
-                <div class="success-box">
-                    <h3>Tier 3: Reinforcement Factors (20% weighted importance)</h3>
-                    <p><strong>2.3.1 Content Localization and Schema Markup</strong></p>
-                    <ul>
-                        <li>LocalBusiness structured data (JSON-LD format preferred)</li>
-                        <li>Schema markup including address, phone, hours, photos, reviews</li>
-                        <li>FAQ schema with location-specific content</li>
-                        <li>Organization schema with business identification</li>
-                        <li>GeoCoordinates markup for precise location identification</li>
-                    </ul>
-                    
-                    <p><strong>2.3.2 On-Page Local Optimization</strong></p>
-                    <ul>
-                        <li>Inclusion of city/municipality names in title tags and meta descriptions</li>
-                        <li>Local keywords naturally incorporated in content</li>
-                        <li>Location-specific landing pages for each service area</li>
-                        <li>Local content addressing geographic-specific needs and interests</li>
-                        <li>Mobile-first optimization for local search (75% of local searches occur on mobile)</li>
-                    </ul>
-                    
-                    <p><strong>2.3.3 Voice Search and Conversational Optimization</strong></p>
-                    <ul>
-                        <li>Natural language keyword phrases ("where can I find")</li>
-                        <li>Question-based content optimized for voice queries</li>
-                        <li>FAQ pages addressing common voice search queries</li>
-                        <li>Conversational tone optimized for AI language understanding</li>
-                    </ul>
-                </div>
             </div>
         </section>
 
@@ -691,20 +710,6 @@
 ├── SpotOnTrafik Slagelse
 ├── SpotOnTrafik Tejn/Rønne
 └── SpotOnTrafik Nykøbing Falster</code></pre>
-
-                <h4>Required Information Completeness:</h4>
-                <p>For each location profile:</p>
-                <ol>
-                    <li><strong>Business Name:</strong> "SpotOnTrafik – [City]" (consistent format)</li>
-                    <li><strong>Address:</strong> Complete street address, postal code</li>
-                    <li><strong>Phone:</strong> Dedicated line for each location (if available) or main line</li>
-                    <li><strong>Website:</strong> Primary website + location-specific landing pages</li>
-                    <li><strong>Business Hours:</strong> Accurate, updated immediately with changes</li>
-                    <li><strong>Service Area:</strong> Geographic radius (typically 15-20 km for driving schools)</li>
-                    <li><strong>Categories:</strong> Primary: "Driving School," Secondary: "Driving Lessons Provider"</li>
-                    <li><strong>Description:</strong> 750-character limit with location name, services, USPs</li>
-                    <li><strong>Attributes:</strong> "Online booking," "Flexible scheduling," "High pass rate"</li>
-                </ol>
             </div>
         </section>
 
@@ -715,14 +720,6 @@
                 <div class="phase-card">
                     <h3>Phase 1: Foundation Establishment (Months 1-2)</h3>
                     
-                    <h4>Week 1-2:</h4>
-                    <ul>
-                        <li>Audit all existing online presence (GBP, citations, listings)</li>
-                        <li>Create NAP standardization guidelines</li>
-                        <li>Develop content calendar and keyword research</li>
-                        <li>Set up analytics and tracking systems</li>
-                    </ul>
-
                     <h4>Months 1-2 KPIs:</h4>
                     <ul>
                         <li>5 locations with complete GBP profiles</li>
@@ -776,7 +773,6 @@
             <div class="subsection">
                 <h2>8.1 Investment Requirements</h2>
                 
-                <h3>Personnel and Services (Annual):</h3>
                 <table>
                     <thead>
                         <tr>
@@ -845,8 +841,6 @@
             
             <div class="subsection">
                 <h2>9.1 Key Performance Indicators (KPIs)</h2>
-                
-                <h3>Primary KPIs:</h3>
                 
                 <div class="kpi-grid">
                     <div class="kpi-card">
@@ -940,9 +934,11 @@
         </section>
     </main>
 
-    <button class="back-to-top" onclick="scrollToTop()">↑</button>
+    <button class="back-to-top" id="backToTop">↑</button>
 
     <script>
+        let isNavExpanded = false;
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -957,6 +953,28 @@
             });
         });
 
+        // Toggle navigation function
+        function toggleNav() {
+            const nav = document.getElementById('navigation');
+            const navList = document.getElementById('navList');
+            
+            if (nav.classList.contains('minimized')) {
+                if (!isNavExpanded) {
+                    nav.classList.add('expanded');
+                    isNavExpanded = true;
+                    setTimeout(() => {
+                        navList.style.maxHeight = '500px';
+                        navList.style.opacity = '1';
+                    }, 50);
+                } else {
+                    nav.classList.remove('expanded');
+                    isNavExpanded = false;
+                    navList.style.maxHeight = '0';
+                    navList.style.opacity = '0';
+                }
+            }
+        }
+
         // Back to top functionality
         function scrollToTop() {
             window.scrollTo({
@@ -965,14 +983,38 @@
             });
         }
 
-        // Show/hide back to top button
+        // Enhanced scroll behavior
         window.addEventListener('scroll', function() {
-            const backToTopButton = document.querySelector('.back-to-top');
-            if (window.pageYOffset > 300) {
-                backToTopButton.style.display = 'block';
+            const nav = document.getElementById('navigation');
+            const backToTopButton = document.getElementById('backToTop');
+            const scrollProgress = document.getElementById('scrollProgress');
+            
+            // Navigation minimization
+            if (window.pageYOffset > 100) {
+                if (!nav.classList.contains('minimized')) {
+                    nav.classList.add('minimized');
+                    nav.classList.remove('expanded');
+                    isNavExpanded = false;
+                }
             } else {
-                backToTopButton.style.display = 'none';
+                nav.classList.remove('minimized', 'expanded');
+                isNavExpanded = false;
+                document.getElementById('navList').style.maxHeight = '';
+                document.getElementById('navList').style.opacity = '';
             }
+            
+            // Back to top button
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+            
+            // Scroll progress bar
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            scrollProgress.style.width = scrolled + "%";
         });
 
         // Active navigation highlighting
@@ -996,6 +1038,9 @@
                 }
             });
         });
+
+        // Click handler for back to top button
+        document.getElementById('backToTop').addEventListener('click', scrollToTop);
     </script>
 </body>
 </html>
